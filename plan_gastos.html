@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Gastos Mensuales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        header {
+            background: #1f1f1f;
+            color: #e0e0e0;
+            padding: 40px 30px;
+            text-align: center;
+            border-bottom: 1px solid #404040;
+        }
+
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            padding: 20px 30px;
+            background: #242424;
+            border-bottom: 1px solid #404040;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls select, .controls button, .controls input {
+            padding: 10px 18px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .controls select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .controls button {
+            background: #3a3a3a;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .controls button:hover {
+            background: #4a4a4a;
+            border-color: #505050;
+        }
+
+        .controls input {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            padding: 30px;
+            background: #242424;
+        }
+
+        .card {
+            background: #2d2d2d;
+            padding: 24px;
+            border-radius: 6px;
+            border: 1px solid #404040;
+            border-left: 3px solid #505050;
+        }
+
+        .card h3 {
+            color: #909090;
+            margin-bottom: 12px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 500;
+        }
+
+        .card .amount {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .card.positive {
+            border-left-color: #4caf50;
+        }
+
+        .card.negative {
+            border-left-color: #f44336;
+        }
+
+        .card.positive .amount {
+            color: #4caf50;
+        }
+
+        .card.negative .amount {
+            color: #f44336;
+        }
+
+        .content {
+            padding: 30px;
+            background: #2d2d2d;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #404040;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .expense-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .expense-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 12px;
+            align-items: center;
+            padding: 14px;
+            background: #242424;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+            transition: all 0.2s;
+        }
+
+        .expense-item:hover {
+            background: #2a2a2a;
+            border-color: #4a4a4a;
+        }
+
+        .expense-item input[type="text"] {
+            padding: 9px 12px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 0.95em;
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .expense-item input[type="number"] {
+            padding: 9px 12px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 0.95em;
+            width: 150px;
+            text-align: right;
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .expense-item button {
+            padding: 9px 16px;
+            background: #3a3a3a;
+            color: #f44336;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .expense-item button:hover {
+            background: #4a4a4a;
+            color: #ff5252;
+        }
+
+        .add-expense {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #4a4a4a;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .add-expense:hover {
+            background: #4a4a4a;
+            border-color: #5a5a5a;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border: 1px solid #404040;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 0.95em;
+            background: #242424;
+            color: #e0e0e0;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .modal-buttons .btn-primary {
+            background: #4a4a4a;
+            color: #e0e0e0;
+        }
+
+        .modal-buttons .btn-primary:hover {
+            background: #5a5a5a;
+        }
+
+        .modal-buttons .btn-secondary {
+            background: #3a3a3a;
+            color: #e0e0e0;
+        }
+
+        .modal-buttons .btn-secondary:hover {
+            background: #4a4a4a;
+        }
+
+        .export-import {
+            display: flex;
+            gap: 10px;
+        }
+
+        .extra-income-section {
+            background: #242424;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            border: 1px solid #3a3a3a;
+        }
+
+        .extra-income-section h2 {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #404040;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .overtime-modal-content {
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border: 1px solid #404040;
+        }
+
+        .overtime-modal-content h2 {
+            color: #e0e0e0;
+            margin-bottom: 10px;
+        }
+
+        .overtime-modal-content p {
+            color: #b0b0b0;
+        }
+
+        .overtime-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .overtime-table th,
+        .overtime-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #404040;
+            color: #e0e0e0;
+        }
+
+        .overtime-table th {
+            background: #242424;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .overtime-table input[type="number"] {
+            width: 60px;
+            padding: 5px;
+            border: 1px solid #404040;
+            border-radius: 3px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+        }
+
+        .overtime-summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #242424;
+            border-radius: 4px;
+            border: 1px solid #404040;
+        }
+
+        .overtime-summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+
+        .overtime-summary-item.total {
+            font-weight: bold;
+            border-top: 2px solid #4a4a4a;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .expense-item {
+                grid-template-columns: 1fr;
+            }
+
+            .expense-item input[type="number"] {
+                width: 100%;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Plan de Gastos Mensuales</h1>
+            <p style="color: #909090; margin-top: 8px; font-size: 0.95em;">Gestiona tus finanzas de manera inteligente</p>
+        </header>
+
+        <div class="controls">
+            <select id="monthSelector">
+                <option value="">Seleccionar mes...</option>
+            </select>
+            <button onclick="addNewMonth()">Nuevo Mes</button>
+            <button onclick="deleteMonth()">Eliminar Mes</button>
+            <div class="export-import">
+                <button onclick="exportData()">Exportar JSON</button>
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                <button onclick="document.getElementById('importFile').click()">Importar JSON</button>
+                <button onclick="resetToJsonFile()">Recargar desde JSON</button>
+            </div>
+        </div>
+
+        <div class="summary-cards">
+            <div class="card">
+                <h3>Ingreso Base</h3>
+                <div class="amount" id="baseIncome">$0</div>
+            </div>
+            <div class="card">
+                <h3>Ingresos Extra</h3>
+                <div class="amount" id="extraIncome">$0</div>
+            </div>
+            <div class="card">
+                <h3>Total Ingresos</h3>
+                <div class="amount" id="totalIncome">$0</div>
+            </div>
+            <div class="card negative">
+                <h3>Total Gastos</h3>
+                <div class="amount" id="totalExpenses">$0</div>
+            </div>
+            <div class="card" id="balanceCard">
+                <h3>Balance</h3>
+                <div class="amount" id="balance">$0</div>
+            </div>
+        </div>
+
+        <div class="content">
+            <div id="monthContent">
+                <p style="text-align: center; color: #6c757d; padding: 50px;">Selecciona un mes o crea uno nuevo</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para nuevo mes -->
+    <div id="newMonthModal" class="modal">
+        <div class="modal-content">
+            <h2>Crear Nuevo Mes</h2>
+            <input type="text" id="newMonthName" placeholder="Nombre del mes (ej: Enero 2024)">
+            <input type="number" id="newMonthIncome" placeholder="Ingreso base">
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                <button class="btn-primary" onclick="createMonth()">Crear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para horas extras -->
+    <div id="overtimeModal" class="modal">
+        <div class="overtime-modal-content">
+            <h2>Gestión de Horas Extras</h2>
+            <p style="color: #909090; margin-bottom: 20px;">Ingresa las horas trabajadas por día. Cálculo basado en: Ingreso Base / 240</p>
+            
+            <div class="overtime-summary">
+                <div class="overtime-summary-item">
+                    <span>Valor Hora Base:</span>
+                    <span id="baseHourValue">$0</span>
+                </div>
+            </div>
+
+            <table class="overtime-table">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>H.E. Diurna Ord (25%)</th>
+                        <th>H.E. Noc Ord (75%)</th>
+                        <th>H.E.D. Dominical (100%)</th>
+                        <th>H.E.N. Dominical (150%)</th>
+                        <th>Total Día</th>
+                    </tr>
+                </thead>
+                <tbody id="overtimeTableBody">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+
+            <div class="overtime-summary">
+                <h3 style="margin-bottom: 15px; color: #e0e0e0;">Resumen</h3>
+                <div class="overtime-summary-item">
+                    <span>H.E. Diurna Ordinaria (25%):</span>
+                    <span id="summaryDiurnaOrd">$0</span>
+                </div>
+                <div class="overtime-summary-item">
+                    <span>H.E. Nocturna Ordinaria (75%):</span>
+                    <span id="summaryNocOrd">$0</span>
+                </div>
+                <div class="overtime-summary-item">
+                    <span>H.E. Diurna Dominical (100%):</span>
+                    <span id="summaryDiurnaDom">$0</span>
+                </div>
+                <div class="overtime-summary-item">
+                    <span>H.E. Nocturna Dominical (150%):</span>
+                    <span id="summaryNocDom">$0</span>
+                </div>
+                <div class="overtime-summary-item total">
+                    <span>Total Horas Extras:</span>
+                    <span id="summaryTotal">$0</span>
+                </div>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeOvertimeModal()">Cancelar</button>
+                <button class="btn-primary" onclick="saveOvertime()">Guardar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos en JSON
+        let database = {
+            months: {},
+            defaultIncome: 3000000,
+            defaultExtraIncome: [],
+            defaultExpenses: [
+                { name: "Servicios", amount: 350000 },
+                { name: "Universidad", amount: 0 },
+                { name: "Tarjeta", amount: 0 },
+                { name: "Computador", amount: 100000 },
+                { name: "Ayudar casa", amount: 0 },
+                { name: "Sistecredito", amount: 0 },
+                { name: "Plan celular", amount: 0 },
+                { name: "Ahorro", amount: 0 },
+                { name: "Cuota inicial casa", amount: 406000 }
+            ]
+        };
+
+        // Cargar datos desde el servidor
+        async function loadData() {
+            try {
+                const response = await fetch('/api/data');
+                if (response.ok) {
+                    const loadedData = await response.json();
+                    console.log('📥 Datos recibidos del servidor:', loadedData);
+                    console.log('defaultExtraIncome del servidor:', loadedData.defaultExtraIncome);
+                    // Asegurar que existen los campos por defecto
+                    database = {
+                        defaultIncome: loadedData.defaultIncome ?? 3000000,
+                        defaultExtraIncome: loadedData.defaultExtraIncome ?? [],
+                        defaultExpenses: loadedData.defaultExpenses ?? [],
+                        months: loadedData.months ?? {}
+                    };
+                    console.log('✅ Datos cargados desde el servidor');
+                    console.log('defaultExtraIncome en database:', database.defaultExtraIncome);
+                } else {
+                    console.error('❌ Error al cargar datos del servidor');
+                }
+            } catch (error) {
+                console.error('❌ No se pudo conectar con el servidor:', error);
+                // Fallback a localStorage si el servidor no está disponible
+                const saved = localStorage.getItem('planGastos');
+                if (saved) {
+                    const loadedData = JSON.parse(saved);
+                    // Asegurar que existen los campos por defecto
+                    database = {
+                        defaultIncome: loadedData.defaultIncome ?? 3000000,
+                        defaultExtraIncome: loadedData.defaultExtraIncome ?? [],
+                        defaultExpenses: loadedData.defaultExpenses ?? [],
+                        months: loadedData.months ?? {}
+                    };
+                    console.log('📦 Datos cargados desde localStorage (modo offline)');
+                }
+            }
+            updateMonthSelector();
+        }
+
+        // Guardar datos en el servidor
+        async function saveData() {
+            try {
+                const response = await fetch('/api/data', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(database)
+                });
+                
+                if (response.ok) {
+                    console.log('✅ Datos guardados en el servidor');
+                    // También guardar en localStorage como backup
+                    localStorage.setItem('planGastos', JSON.stringify(database));
+                } else {
+                    console.error('❌ Error al guardar en el servidor');
+                    // Guardar solo en localStorage si falla el servidor
+                    localStorage.setItem('planGastos', JSON.stringify(database));
+                }
+            } catch (error) {
+                console.error('❌ No se pudo conectar con el servidor:', error);
+                // Guardar en localStorage como fallback
+                localStorage.setItem('planGastos', JSON.stringify(database));
+                console.log('📦 Datos guardados solo en localStorage (modo offline)');
+            }
+        }
+
+        // Formatear número a pesos colombianos
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('es-CO', {
+                style: 'currency',
+                currency: 'COP',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(amount);
+        }
+
+        // Actualizar selector de meses
+        function updateMonthSelector() {
+            const selector = document.getElementById('monthSelector');
+            selector.innerHTML = '<option value="">Seleccionar mes...</option>';
+            
+            Object.keys(database.months).forEach(monthId => {
+                const option = document.createElement('option');
+                option.value = monthId;
+                option.textContent = database.months[monthId].name;
+                selector.appendChild(option);
+            });
+        }
+
+        // Mostrar modal de nuevo mes
+        function addNewMonth() {
+            document.getElementById('newMonthIncome').value = database.defaultIncome || 3000000;
+            document.getElementById('newMonthModal').classList.add('active');
+        }
+
+        // Cerrar modal
+        function closeModal() {
+            document.getElementById('newMonthModal').classList.remove('active');
+        }
+
+        // Crear nuevo mes
+        function createMonth() {
+            const name = document.getElementById('newMonthName').value.trim();
+            const income = parseFloat(document.getElementById('newMonthIncome').value) || database.defaultIncome || 3000000;
+
+            if (!name) {
+                alert('Por favor ingresa un nombre para el mes');
+                return;
+            }
+
+            const monthId = 'month_' + Date.now();
+            database.months[monthId] = {
+                name: name,
+                baseIncome: income,
+                extraIncome: JSON.parse(JSON.stringify(database.defaultExtraIncome || [])),
+                expenses: JSON.parse(JSON.stringify(database.defaultExpenses)),
+                otherExpenses: [],
+                overtime: { days: {} }
+            };
+
+            saveData();
+            updateMonthSelector();
+            closeModal();
+            
+            document.getElementById('monthSelector').value = monthId;
+            loadMonth(monthId);
+            
+            // Limpiar campos
+            document.getElementById('newMonthName').value = '';
+            document.getElementById('newMonthIncome').value = database.defaultIncome || 3000000;
+        }
+
+        // Eliminar mes
+        function deleteMonth() {
+            const selector = document.getElementById('monthSelector');
+            const monthId = selector.value;
+
+            if (!monthId) {
+                alert('Selecciona un mes para eliminar');
+                return;
+            }
+
+            if (confirm('¿Estás seguro de eliminar este mes?')) {
+                delete database.months[monthId];
+                saveData();
+                updateMonthSelector();
+                document.getElementById('monthContent').innerHTML = 
+                    '<p style="text-align: center; color: #6c757d; padding: 50px;">Selecciona un mes o crea uno nuevo</p>';
+                clearSummary();
+            }
+        }
+
+        // Cargar mes seleccionado
+        function loadMonth(monthId) {
+            const month = database.months[monthId];
+            if (!month) return;
+
+            // Inicializar overtime si no existe
+            if (!month.overtime) {
+                month.overtime = { days: {} };
+            }
+
+            const content = document.getElementById('monthContent');
+            content.innerHTML = `
+                <div class="extra-income-section">
+                    <h2>Ingresos Extra</h2>
+                    <div id="extraIncomeList"></div>
+                    <button class="add-expense" onclick="addExtraIncome('${monthId}')">Agregar Ingreso Extra</button>
+                    <button class="add-expense" onclick="openOvertimeModal('${monthId}')" style="margin-left: 10px;">Gestionar Horas Extras</button>
+                </div>
+
+                <div class="section">
+                    <h2>Gastos Fijos</h2>
+                    <div class="expense-grid" id="expensesList"></div>
+                    <button class="add-expense" onclick="addExpense('${monthId}')">Agregar Gasto</button>
+                </div>
+
+                <div class="section">
+                    <h2>Otros Gastos</h2>
+                    <div class="expense-grid" id="otherExpensesList"></div>
+                    <button class="add-expense" onclick="addOtherExpense('${monthId}')">Agregar Otro Gasto</button>
+                </div>
+            `;
+
+            renderExtraIncome(monthId);
+            renderExpenses(monthId);
+            renderOtherExpenses(monthId);
+            updateSummary(monthId);
+        }
+
+        // Renderizar ingresos extra
+        function renderExtraIncome(monthId) {
+            const month = database.months[monthId];
+            const container = document.getElementById('extraIncomeList');
+            
+            container.innerHTML = month.extraIncome.map((income, index) => `
+                <div class="expense-item">
+                    <input type="text" value="${income.description}" 
+                           onchange="updateExtraIncome('${monthId}', ${index}, 'description', this.value)">
+                    <input type="number" value="${income.amount}" 
+                           onchange="updateExtraIncome('${monthId}', ${index}, 'amount', this.value)">
+                    <button onclick="removeExtraIncome('${monthId}', ${index})">Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        // Renderizar gastos fijos
+        function renderExpenses(monthId) {
+            const month = database.months[monthId];
+            const container = document.getElementById('expensesList');
+            
+            container.innerHTML = month.expenses.map((expense, index) => `
+                <div class="expense-item">
+                    <input type="text" value="${expense.name}" 
+                           onchange="updateExpense('${monthId}', ${index}, 'name', this.value)">
+                    <input type="number" value="${expense.amount}" 
+                           onchange="updateExpense('${monthId}', ${index}, 'amount', this.value)">
+                    <button onclick="removeExpense('${monthId}', ${index})">Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        // Renderizar otros gastos
+        function renderOtherExpenses(monthId) {
+            const month = database.months[monthId];
+            const container = document.getElementById('otherExpensesList');
+            
+            container.innerHTML = month.otherExpenses.map((expense, index) => `
+                <div class="expense-item">
+                    <input type="text" value="${expense.description}" 
+                           onchange="updateOtherExpense('${monthId}', ${index}, 'description', this.value)">
+                    <input type="number" value="${expense.amount}" 
+                           onchange="updateOtherExpense('${monthId}', ${index}, 'amount', this.value)">
+                    <button onclick="removeOtherExpense('${monthId}', ${index})">Eliminar</button>
+                </div>
+            `).join('');
+        }
+
+        // Actualizar ingreso extra
+        function updateExtraIncome(monthId, index, field, value) {
+            const month = database.months[monthId];
+            month.extraIncome[index][field] = field === 'amount' ? parseFloat(value) || 0 : value;
+            saveData();
+            updateSummary(monthId);
+        }
+
+        // Agregar ingreso extra
+        function addExtraIncome(monthId) {
+            const month = database.months[monthId];
+            month.extraIncome.push({ description: 'Nuevo ingreso', amount: 0 });
+            saveData();
+            renderExtraIncome(monthId);
+            updateSummary(monthId);
+        }
+
+        // Eliminar ingreso extra
+        function removeExtraIncome(monthId, index) {
+            const month = database.months[monthId];
+            month.extraIncome.splice(index, 1);
+            saveData();
+            renderExtraIncome(monthId);
+            updateSummary(monthId);
+        }
+
+        // Actualizar gasto
+        function updateExpense(monthId, index, field, value) {
+            const month = database.months[monthId];
+            month.expenses[index][field] = field === 'amount' ? parseFloat(value) || 0 : value;
+            saveData();
+            updateSummary(monthId);
+        }
+
+        // Agregar gasto
+        function addExpense(monthId) {
+            const month = database.months[monthId];
+            month.expenses.push({ name: 'Nuevo gasto', amount: 0 });
+            saveData();
+            renderExpenses(monthId);
+            updateSummary(monthId);
+        }
+
+        // Eliminar gasto
+        function removeExpense(monthId, index) {
+            const month = database.months[monthId];
+            month.expenses.splice(index, 1);
+            saveData();
+            renderExpenses(monthId);
+            updateSummary(monthId);
+        }
+
+        // Actualizar otro gasto
+        function updateOtherExpense(monthId, index, field, value) {
+            const month = database.months[monthId];
+            month.otherExpenses[index][field] = field === 'amount' ? parseFloat(value) || 0 : value;
+            saveData();
+            updateSummary(monthId);
+        }
+
+        // Agregar otro gasto
+        function addOtherExpense(monthId) {
+            const month = database.months[monthId];
+            month.otherExpenses.push({ description: 'Nuevo gasto', amount: 0 });
+            saveData();
+            renderOtherExpenses(monthId);
+            updateSummary(monthId);
+        }
+
+        // Eliminar otro gasto
+        function removeOtherExpense(monthId, index) {
+            const month = database.months[monthId];
+            month.otherExpenses.splice(index, 1);
+            saveData();
+            renderOtherExpenses(monthId);
+            updateSummary(monthId);
+        }
+
+        // Variables globales para el modal de horas extras
+        let currentOvertimeMonthId = null;
+
+        // Abrir modal de horas extras
+        function openOvertimeModal(monthId) {
+            currentOvertimeMonthId = monthId;
+            const month = database.months[monthId];
+            
+            // Inicializar overtime si no existe
+            if (!month.overtime) {
+                month.overtime = { days: {} };
+            }
+
+            const baseHourValue = month.baseIncome / 240;
+            document.getElementById('baseHourValue').textContent = formatCurrency(baseHourValue);
+
+            // Crear tabla de 31 días
+            const tbody = document.getElementById('overtimeTableBody');
+            tbody.innerHTML = '';
+            
+            for (let day = 1; day <= 31; day++) {
+                const dayData = month.overtime.days[day] || {
+                    diurnaOrd: 0,
+                    nocOrd: 0,
+                    diurnaDom: 0,
+                    nocDom: 0
+                };
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${day}</td>
+                    <td><input type="number" min="0" step="0.5" value="${dayData.diurnaOrd}" 
+                               onchange="updateOvertimeDay(${day}, 'diurnaOrd', this.value)"></td>
+                    <td><input type="number" min="0" step="0.5" value="${dayData.nocOrd}" 
+                               onchange="updateOvertimeDay(${day}, 'nocOrd', this.value)"></td>
+                    <td><input type="number" min="0" step="0.5" value="${dayData.diurnaDom}" 
+                               onchange="updateOvertimeDay(${day}, 'diurnaDom', this.value)"></td>
+                    <td><input type="number" min="0" step="0.5" value="${dayData.nocDom}" 
+                               onchange="updateOvertimeDay(${day}, 'nocDom', this.value)"></td>
+                    <td id="dayTotal${day}">$0</td>
+                `;
+                tbody.appendChild(row);
+            }
+
+            calculateOvertimeSummary();
+            document.getElementById('overtimeModal').classList.add('active');
+        }
+
+        // Actualizar horas de un día
+        function updateOvertimeDay(day, type, value) {
+            const month = database.months[currentOvertimeMonthId];
+            
+            if (!month.overtime.days[day]) {
+                month.overtime.days[day] = {
+                    diurnaOrd: 0,
+                    nocOrd: 0,
+                    diurnaDom: 0,
+                    nocDom: 0
+                };
+            }
+
+            month.overtime.days[day][type] = parseFloat(value) || 0;
+            calculateOvertimeSummary();
+        }
+
+        // Calcular resumen de horas extras
+        function calculateOvertimeSummary() {
+            const month = database.months[currentOvertimeMonthId];
+            const baseHourValue = month.baseIncome / 240;
+
+            let totalDiurnaOrd = 0;
+            let totalNocOrd = 0;
+            let totalDiurnaDom = 0;
+            let totalNocDom = 0;
+
+            // Calcular totales por tipo y por día
+            for (let day = 1; day <= 31; day++) {
+                const dayData = month.overtime.days[day] || {
+                    diurnaOrd: 0,
+                    nocOrd: 0,
+                    diurnaDom: 0,
+                    nocDom: 0
+                };
+
+                const diurnaOrd = dayData.diurnaOrd || 0;
+                const nocOrd = dayData.nocOrd || 0;
+                const diurnaDom = dayData.diurnaDom || 0;
+                const nocDom = dayData.nocDom || 0;
+
+                totalDiurnaOrd += diurnaOrd;
+                totalNocOrd += nocOrd;
+                totalDiurnaDom += diurnaDom;
+                totalNocDom += nocDom;
+
+                // Calcular total del día
+                const dayTotal = 
+                    (diurnaOrd * baseHourValue * 1.25) +
+                    (nocOrd * baseHourValue * 1.75) +
+                    (diurnaDom * baseHourValue * 2.00) +
+                    (nocDom * baseHourValue * 2.50);
+
+                const dayTotalElement = document.getElementById('dayTotal' + day);
+                if (dayTotalElement) {
+                    dayTotalElement.textContent = formatCurrency(dayTotal);
+                }
+            }
+
+            // Actualizar resumen
+            const summaryDiurnaOrd = totalDiurnaOrd * baseHourValue * 1.25;
+            const summaryNocOrd = totalNocOrd * baseHourValue * 1.75;
+            const summaryDiurnaDom = totalDiurnaDom * baseHourValue * 2.00;
+            const summaryNocDom = totalNocDom * baseHourValue * 2.50;
+            const total = summaryDiurnaOrd + summaryNocOrd + summaryDiurnaDom + summaryNocDom;
+
+            document.getElementById('summaryDiurnaOrd').textContent = formatCurrency(summaryDiurnaOrd);
+            document.getElementById('summaryNocOrd').textContent = formatCurrency(summaryNocOrd);
+            document.getElementById('summaryDiurnaDom').textContent = formatCurrency(summaryDiurnaDom);
+            document.getElementById('summaryNocDom').textContent = formatCurrency(summaryNocDom);
+            document.getElementById('summaryTotal').textContent = formatCurrency(total);
+        }
+
+        // Cerrar modal de horas extras
+        function closeOvertimeModal() {
+            document.getElementById('overtimeModal').classList.remove('active');
+            currentOvertimeMonthId = null;
+        }
+
+        // Guardar horas extras
+        function saveOvertime() {
+            saveData();
+            updateSummary(currentOvertimeMonthId);
+            closeOvertimeModal();
+            alert('Horas extras guardadas correctamente');
+        }
+
+        // Calcular total de horas extras
+        function calculateOvertimeTotal(monthId) {
+            const month = database.months[monthId];
+            if (!month.overtime || !month.overtime.days) return 0;
+
+            const baseHourValue = month.baseIncome / 240;
+            let total = 0;
+
+            Object.values(month.overtime.days).forEach(day => {
+                total += (day.diurnaOrd || 0) * baseHourValue * 1.25;
+                total += (day.nocOrd || 0) * baseHourValue * 1.75;
+                total += (day.diurnaDom || 0) * baseHourValue * 2.00;
+                total += (day.nocDom || 0) * baseHourValue * 2.50;
+            });
+
+            return total;
+        }
+
+        // Actualizar resumen
+        function updateSummary(monthId) {
+            const month = database.months[monthId];
+            
+            // Aplicar descuento del 8% de impuesto al ingreso base
+            const baseIncomeAfterTax = month.baseIncome * 0.92;
+            const extraIncomeTotal = month.extraIncome.reduce((sum, item) => sum + item.amount, 0);
+            const overtimeTotal = calculateOvertimeTotal(monthId);
+            const totalIncome = baseIncomeAfterTax + extraIncomeTotal + overtimeTotal;
+            const totalExpenses = month.expenses.reduce((sum, exp) => sum + exp.amount, 0) +
+                                 month.otherExpenses.reduce((sum, exp) => sum + exp.amount, 0);
+            const balance = totalIncome - totalExpenses;
+
+            document.getElementById('baseIncome').textContent = formatCurrency(baseIncomeAfterTax);
+            document.getElementById('extraIncome').textContent = formatCurrency(extraIncomeTotal + overtimeTotal);
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
+            document.getElementById('balance').textContent = formatCurrency(balance);
+
+            const balanceCard = document.getElementById('balanceCard');
+            balanceCard.classList.remove('positive', 'negative');
+            balanceCard.classList.add(balance >= 0 ? 'positive' : 'negative');
+        }
+
+        // Limpiar resumen
+        function clearSummary() {
+            document.getElementById('baseIncome').textContent = '$0';
+            document.getElementById('extraIncome').textContent = '$0';
+            document.getElementById('totalIncome').textContent = '$0';
+            document.getElementById('totalExpenses').textContent = '$0';
+            document.getElementById('balance').textContent = '$0';
+        }
+
+        // Exportar datos
+        function exportData() {
+            const dataStr = JSON.stringify(database, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'plan_gastos_' + new Date().toISOString().split('T')[0] + '.json';
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Importar datos
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (confirm('¿Deseas reemplazar todos los datos actuales?')) {
+                        database = imported;
+                        saveData();
+                        updateMonthSelector();
+                        alert('Datos importados correctamente');
+                        location.reload(); // Recargar página
+                    }
+                } catch (error) {
+                    alert('Error al importar el archivo');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Recargar desde el archivo JSON local
+        async function resetToJsonFile() {
+            if (confirm('¿Deseas recargar los datos desde el archivo plan_gastos_data.json? Esto recargará desde el disco.')) {
+                await loadData();
+                alert('Datos recargados desde el archivo');
+                location.reload();
+            }
+        }
+
+        // Event listener para cambio de mes
+        document.getElementById('monthSelector').addEventListener('change', function() {
+            const monthId = this.value;
+            if (monthId) {
+                loadMonth(monthId);
+            } else {
+                document.getElementById('monthContent').innerHTML = 
+                    '<p style="text-align: center; color: #6c757d; padding: 50px;">Selecciona un mes o crea uno nuevo</p>';
+                clearSummary();
+            }
+        });
+
+        // Inicializar
+        loadData();
+    </script>
+</body>
+</html>

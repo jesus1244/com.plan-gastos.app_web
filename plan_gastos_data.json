@@ -1,0 +1,223 @@
+{
+  "defaultIncome": 3000000,
+  "defaultExtraIncome": [
+    {
+      "amount": 240000,
+      "description": "Bono"
+    }
+  ],
+  "defaultExpenses": [
+    {
+      "amount": 500000,
+      "name": "Servicios"
+    },
+    {
+      "amount": 1000000,
+      "name": "Tarjeta"
+    },
+    {
+      "amount": 100000,
+      "name": "Computador"
+    },
+    {
+      "amount": 100000,
+      "name": "Mamá"
+    },
+    {
+      "amount": 50000,
+      "name": "Gatos"
+    },
+    {
+      "amount": 40000,
+      "name": "Copilot"
+    }
+  ],
+  "months": {
+    "month_1767902700138": {
+      "baseIncome": 2650000,
+      "expenses": [
+        {
+          "amount": 500000,
+          "name": "Servicios"
+        },
+        {
+          "amount": 500000,
+          "name": "Tarjeta"
+        },
+        {
+          "amount": 800000,
+          "name": "Computador"
+        },
+        {
+          "amount": 100000,
+          "name": "Mamá"
+        },
+        {
+          "amount": 50000,
+          "name": "Gatos"
+        },
+        {
+          "amount": 40000,
+          "name": "Copilot"
+        },
+        {
+          "name": "Michel",
+          "amount": 85000
+        }
+      ],
+      "extraIncome": [
+        {
+          "amount": 200000,
+          "description": "Intereses cesantias"
+        }
+      ],
+      "name": "Febrero 2026",
+      "otherExpenses": [],
+      "overtime": {
+        "days": {
+          "31": {
+            "diurnaOrd": 0,
+            "nocOrd": 0,
+            "diurnaDom": 0,
+            "nocDom": 0
+          }
+        }
+      }
+    },
+    "month_1767904689704": {
+      "baseIncome": 3000000,
+      "expenses": [
+        {
+          "amount": 550000,
+          "name": "Servicios"
+        },
+        {
+          "amount": 1000000,
+          "name": "Tarjeta"
+        },
+        {
+          "amount": 100000,
+          "name": "Computador"
+        },
+        {
+          "amount": 100000,
+          "name": "Mamá"
+        },
+        {
+          "amount": 50000,
+          "name": "Gatos"
+        },
+        {
+          "amount": 40000,
+          "name": "Copilot"
+        }
+      ],
+      "extraIncome": [
+        {
+          "amount": 240000,
+          "description": "Bono"
+        }
+      ],
+      "name": "Marzo 2026",
+      "otherExpenses": [],
+      "overtime": {
+        "days": {
+          "6": {
+            "diurnaDom": 0,
+            "diurnaOrd": 0,
+            "nocDom": 0,
+            "nocOrd": 3
+          },
+          "7": {
+            "diurnaDom": 0,
+            "diurnaOrd": 0,
+            "nocDom": 0,
+            "nocOrd": 5
+          },
+          "8": {
+            "diurnaDom": 0,
+            "diurnaOrd": 0,
+            "nocDom": 0,
+            "nocOrd": 1
+          }
+        }
+      }
+    },
+    "month_1767905110140": {
+      "baseIncome": 3000000,
+      "expenses": [
+        {
+          "amount": 500000,
+          "name": "Servicios"
+        },
+        {
+          "amount": 100000,
+          "name": "Computador"
+        },
+        {
+          "amount": 100000,
+          "name": "Mamá"
+        },
+        {
+          "amount": 50000,
+          "name": "Gatos"
+        },
+        {
+          "amount": 40000,
+          "name": "Copilot"
+        }
+      ],
+      "extraIncome": [
+        {
+          "amount": 240000,
+          "description": "Bono"
+        }
+      ],
+      "name": "Abril 2026",
+      "otherExpenses": [],
+      "overtime": {
+        "days": {}
+      }
+    },
+    "month_1768334112365": {
+      "name": "Mayo 2026",
+      "baseIncome": 3000000,
+      "extraIncome": [
+        {
+          "amount": 240000,
+          "description": "Bono"
+        }
+      ],
+      "expenses": [
+        {
+          "amount": 500000,
+          "name": "Servicios"
+        },
+        {
+          "amount": 0,
+          "name": "Tarjeta"
+        },
+        {
+          "amount": 100000,
+          "name": "Computador"
+        },
+        {
+          "amount": 100000,
+          "name": "Mamá"
+        },
+        {
+          "amount": 50000,
+          "name": "Gatos"
+        },
+        {
+          "amount": 40000,
+          "name": "Copilot"
+        }
+      ],
+      "otherExpenses": [],
+      "overtime": {
+        "days": {}
+      }
+    }
+  }
+}
