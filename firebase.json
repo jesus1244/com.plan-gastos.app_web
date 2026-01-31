@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "public": "Gastos",
+    "public": ".",
     "ignore": [
       "firebase.json",
       "**/.*",
