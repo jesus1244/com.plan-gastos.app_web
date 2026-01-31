@@ -20,4 +20,3 @@ jobs:
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT }}"
           channelId: live
           projectId: plan-gastos
-          entryPoint: Gastos
