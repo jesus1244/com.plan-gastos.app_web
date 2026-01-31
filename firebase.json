@@ -1,0 +1,10 @@
+{
+  "hosting": {
+    "public": "Gastos",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ]
+  }
+}
