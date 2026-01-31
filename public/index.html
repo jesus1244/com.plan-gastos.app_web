@@ -1,0 +1,1495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan de Gastos Mensuales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', sans-serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+
+        header {
+            background: #1f1f1f;
+            color: #e0e0e0;
+            padding: 40px 30px;
+            text-align: center;
+            border-bottom: 1px solid #404040;
+        }
+
+        header h1 {
+            font-size: 2.2em;
+            margin-bottom: 8px;
+            font-weight: 600;
+            letter-spacing: -0.5px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 12px;
+            padding: 20px 30px;
+            background: #242424;
+            border-bottom: 1px solid #404040;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .controls select, .controls button, .controls input {
+            padding: 10px 18px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 0.95em;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .controls select {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .controls button {
+            background: #3a3a3a;
+            color: #e0e0e0;
+            font-weight: 500;
+        }
+
+        .controls button:hover {
+            background: #4a4a4a;
+            border-color: #505050;
+        }
+
+        .controls input {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            padding: 30px;
+            background: #242424;
+        }
+
+        .card {
+            background: #2d2d2d;
+            padding: 24px;
+            border-radius: 6px;
+            border: 1px solid #404040;
+            border-left: 3px solid #505050;
+        }
+
+        .card h3 {
+            color: #909090;
+            margin-bottom: 12px;
+            font-size: 0.85em;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            font-weight: 500;
+        }
+
+        .card .amount {
+            font-size: 1.8em;
+            font-weight: 600;
+            color: #e0e0e0;
+        }
+
+        .card.positive {
+            border-left-color: #4caf50;
+        }
+
+        .card.negative {
+            border-left-color: #f44336;
+        }
+
+        .card.positive .amount {
+            color: #4caf50;
+        }
+
+        .card.negative .amount {
+            color: #f44336;
+        }
+
+        .content {
+            padding: 30px;
+            background: #2d2d2d;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #404040;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .expense-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .expense-item {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 12px;
+            align-items: center;
+            padding: 14px;
+            background: #242424;
+            border-radius: 4px;
+            border: 1px solid #3a3a3a;
+            transition: all 0.2s;
+        }
+
+        .expense-item:hover {
+            background: #2a2a2a;
+            border-color: #4a4a4a;
+        }
+
+        .expense-item input[type="text"] {
+            padding: 9px 12px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 0.95em;
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .expense-item input[type="number"] {
+            padding: 9px 12px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 0.95em;
+            width: 150px;
+            text-align: right;
+            background: #2d2d2d;
+            color: #e0e0e0;
+        }
+
+        .expense-item button {
+            padding: 9px 16px;
+            background: #3a3a3a;
+            color: #f44336;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .expense-item button:hover {
+            background: #4a4a4a;
+            color: #ff5252;
+        }
+
+        .add-expense {
+            display: inline-block;
+            margin-top: 15px;
+            padding: 10px 20px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #4a4a4a;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .add-expense:hover {
+            background: #4a4a4a;
+            border-color: #5a5a5a;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #2d2d2d;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border: 1px solid #404040;
+        }
+
+        .modal-content h2 {
+            margin-bottom: 20px;
+            color: #e0e0e0;
+            font-weight: 600;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            font-size: 0.95em;
+            background: #242424;
+            color: #e0e0e0;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .modal-buttons .btn-primary {
+            background: #4a4a4a;
+            color: #e0e0e0;
+        }
+
+        .modal-buttons .btn-primary:hover {
+            background: #5a5a5a;
+        }
+
+        .modal-buttons .btn-secondary {
+            background: #3a3a3a;
+            color: #e0e0e0;
+        }
+
+        .modal-buttons .btn-secondary:hover {
+            background: #4a4a4a;
+        }
+
+        .export-import {
+            display: flex;
+            gap: 10px;
+        }
+
+        .extra-income-section {
+            background: #242424;
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 30px;
+            border: 1px solid #3a3a3a;
+        }
+
+        .extra-income-section h2 {
+            color: #e0e0e0;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #404040;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .overtime-modal-content {
+            background: #2d2d2d;
+            padding: 0;
+            border-radius: 8px;
+            max-width: 900px;
+            width: 90%;
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            border: 1px solid #404040;
+            position: relative;
+        }
+
+        .overtime-modal-header {
+            padding: 20px 30px;
+            border-bottom: 1px solid #404040;
+            position: sticky;
+            top: 0;
+            background: #2d2d2d;
+            z-index: 20;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .overtime-modal-body {
+            padding: 20px 30px;
+            overflow-y: auto;
+            flex: 1;
+        }
+
+        .overtime-modal-footer {
+            padding: 15px 30px;
+            border-top: 1px solid #404040;
+            background: #2d2d2d;
+            position: sticky;
+            bottom: 0;
+            z-index: 20;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .close-modal-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 32px;
+            height: 32px;
+            background: #3a3a3a;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            color: #e0e0e0;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            z-index: 21;
+        }
+
+        .close-modal-btn:hover {
+            background: #f44336;
+            border-color: #f44336;
+            color: white;
+        }
+
+        .overtime-modal-content h2 {
+            color: #e0e0e0;
+            margin-bottom: 10px;
+        }
+
+        .overtime-modal-content p {
+            color: #b0b0b0;
+        }
+
+        .overtime-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .overtime-table th,
+        .overtime-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #404040;
+            color: #e0e0e0;
+        }
+
+        .overtime-table th {
+            background: #242424;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .overtime-table input[type="number"] {
+            width: 60px;
+            padding: 8px 5px;
+            border: 1px solid #404040;
+            border-radius: 3px;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .overtime-modal-content {
+                width: 95%;
+                max-height: 95vh;
+            }
+
+            .overtime-modal-header,
+            .overtime-modal-body,
+            .overtime-modal-footer {
+                padding: 15px;
+            }
+
+            .overtime-table {
+                font-size: 12px;
+            }
+
+            .overtime-table th,
+            .overtime-table td {
+                padding: 8px 4px;
+            }
+
+            .overtime-table input[type="number"] {
+                width: 50px;
+                padding: 10px 4px;
+                font-size: 16px;
+            }
+
+            .overtime-table th {
+                font-size: 11px;
+            }
+        }
+
+        .overtime-summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #242424;
+            border-radius: 4px;
+            border: 1px solid #404040;
+        }
+
+        .overtime-summary-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #e0e0e0;
+        }
+
+        .overtime-summary-item.total {
+            font-weight: bold;
+            border-top: 2px solid #4a4a4a;
+            padding-top: 10px;
+            margin-top: 10px;
+            font-size: 1.1em;
+        }
+
+        /* Auth Screen Styles */
+        .auth-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-container {
+            background: #2d2d2d;
+            padding: 50px;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            border: 1px solid #404040;
+        }
+
+        .auth-container h1 {
+            color: #e0e0e0;
+            margin-bottom: 15px;
+            font-size: 2em;
+        }
+
+        .auth-container p {
+            color: #909090;
+            margin-bottom: 40px;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 14px 20px;
+            background: #4285f4;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .google-btn:hover {
+            background: #357ae8;
+            box-shadow: 0 4px 12px rgba(66, 133, 244, 0.4);
+        }
+
+        /* Loading Screen Styles */
+        .loading-screen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid #404040;
+            border-top: 4px solid #4285f4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-screen p {
+            color: #909090;
+            font-size: 1.2em;
+        }
+
+        /* User Info Bar */
+        .user-info-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 30px;
+            background: #1f1f1f;
+            border-bottom: 1px solid #404040;
+        }
+
+        .user-email {
+            color: #909090;
+            font-size: 0.9em;
+        }
+
+        .logout-btn {
+            padding: 8px 16px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+            border: 1px solid #404040;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.2s;
+        }
+
+        .logout-btn:hover {
+            background: #4a4a4a;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 0;
+                background: #121212;
+            }
+
+            .container {
+                border-radius: 0;
+            }
+
+            header {
+                padding: 20px 15px;
+                background: #1f1f1f;
+            }
+
+            header h1 {
+                font-size: 1.5em;
+            }
+
+            header p {
+                font-size: 0.85em;
+            }
+
+            .controls {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                padding: 12px;
+                gap: 8px;
+            }
+
+            .controls select {
+                grid-column: 1 / -1;
+                padding: 12px;
+                font-size: 0.95em;
+            }
+
+            .controls button {
+                padding: 10px 12px;
+                font-size: 0.85em;
+            }
+
+            .summary-cards {
+                padding: 12px;
+                gap: 10px;
+            }
+
+            .card {
+                padding: 14px 12px;
+                border-radius: 8px;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            }
+
+            .card h3 {
+                font-size: 0.7em;
+            }
+
+            .card .amount {
+                font-size: 1.4em;
+            }
+
+            .content {
+                padding: 15px 12px;
+            }
+
+            .section {
+                margin-bottom: 25px;
+                padding: 15px 0;
+            }
+
+            .section h2 {
+                font-size: 1.1em;
+                margin-bottom: 15px;
+                padding-bottom: 10px;
+            }
+
+            .expense-grid {
+                gap: 10px;
+            }
+
+            .expense-item {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 12px;
+                background: #242424;
+                border: 1px solid #3a3a3a;
+            }
+
+            .expense-item input[type="text"] {
+                width: 100%;
+                padding: 12px;
+                font-size: 1em;
+                background: #2d2d2d;
+                border: 1px solid #404040;
+            }
+
+            .expense-item-row {
+                display: grid;
+                grid-template-columns: 1.5fr 1fr;
+                gap: 8px;
+                align-items: center;
+            }
+
+            .expense-item input[type="number"] {
+                padding: 10px;
+                font-size: 0.95em;
+                text-align: right;
+                background: #2d2d2d;
+                border: 1px solid #404040;
+            }
+
+            .expense-item button {
+                padding: 10px;
+                font-size: 0.85em;
+                background: #3a3a3a;
+                color: #f44336;
+                border: 1px solid #404040;
+            }
+
+            .add-expense {
+                width: 100%;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: #3a3a3a;
+                color: #e0e0e0;
+                border: 1px solid #404040;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+            }
+
+            .add-expense::before {
+                content: '+';
+                font-size: 1.3em;
+                font-weight: bold;
+            }
+
+            .auth-container {
+                padding: 30px 20px;
+            }
+
+            .user-info-bar {
+                padding: 12px 15px;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 10px;
+                flex-wrap: wrap;
+            }
+
+            .user-email {
+                font-size: 0.8em;
+                flex: 1;
+                min-width: 150px;
+            }
+
+            .logout-btn {
+                padding: 8px 16px;
+                font-size: 0.85em;
+                background: linear-gradient(135deg, #f44336, #d32f2f);
+                border: none;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                border-radius: 12px;
+            }
+
+            .modal-content h2 {
+                font-size: 1.3em;
+            }
+
+            .modal-content input {
+                padding: 14px;
+                font-size: 1em;
+                border-radius: 8px;
+            }
+
+            .modal-buttons button {
+                padding: 12px 20px;
+                border-radius: 8px;
+                font-weight: 500;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Screen -->
+    <div id="authScreen" class="auth-screen" style="display: none;">
+        <div class="auth-container">
+            <h1>Plan de Gastos</h1>
+            <p>Gestiona tus finanzas de manera inteligente</p>
+            <button class="google-btn" onclick="loginWithGoogle()">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                    <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                    <path fill="currentColor" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                    <path fill="currentColor" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                Iniciar sesión con Google
+            </button>
+        </div>
+    </div>
+
+    <!-- Loading Screen -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="spinner"></div>
+        <p>Cargando tus datos...</p>
+    </div>
+
+    <!-- App Screen -->
+    <div id="appScreen" style="display: none;">
+        <div class="user-info-bar">
+            <span class="user-email" id="userEmail"></span>
+            <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
+        </div>
+
+        <div class="container">
+            <header>
+                <h1>Plan de Gastos Mensuales</h1>
+                <p style="color: #909090; margin-top: 8px; font-size: 0.95em;">Gestiona tus finanzas de manera inteligente</p>
+            </header>
+
+            <div class="controls">
+                <select id="monthSelector" onchange="loadMonth(this.value)">
+                    <option value="">Seleccionar mes...</option>
+                </select>
+                <button onclick="createMonth()">Nuevo Mes</button>
+                <button onclick="deleteMonth()">Eliminar Mes</button>
+                <button onclick="exportToJSON()">Exportar JSON</button>
+            </div>
+
+            <div class="summary-cards">
+                <div class="card">
+                    <h3>Ingreso Base</h3>
+                    <div class="amount" id="baseIncome">$0</div>
+                </div>
+                <div class="card">
+                    <h3>Ingresos Extra</h3>
+                    <div class="amount" id="extraIncome">$0</div>
+                </div>
+                <div class="card">
+                    <h3>Total Ingresos</h3>
+                    <div class="amount" id="totalIncome">$0</div>
+                </div>
+                <div class="card negative">
+                    <h3>Total Gastos</h3>
+                    <div class="amount" id="totalExpenses">$0</div>
+                </div>
+                <div class="card" id="balanceCard">
+                    <h3>Balance</h3>
+                    <div class="amount" id="balance">$0</div>
+                </div>
+            </div>
+
+            <div class="content">
+                <div id="monthContent">
+                    <p style="text-align: center; color: #909090; padding: 50px;">Selecciona un mes o crea uno nuevo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Overtime Modal -->
+    <div id="overtimeModal" class="modal">
+        <div class="overtime-modal-content">
+            <button class="close-modal-btn" onclick="closeOvertimeModal()" title="Cerrar">✕</button>
+            
+            <div class="overtime-modal-header">
+                <h2>Gestión de Horas Extras</h2>
+                <p style="color: #909090; margin-top: 8px;">Ingresa las horas trabajadas por día. Cálculo basado en: Ingreso Base / 240</p>
+            </div>
+
+            <div class="overtime-modal-body">
+                <div class="overtime-summary">
+                    <div class="overtime-summary-item">
+                        <span>Valor Hora Base:</span>
+                        <span id="baseHourValue">$0</span>
+                    </div>
+                </div>
+
+                <table class="overtime-table">
+                <thead>
+                    <tr>
+                        <th>Día</th>
+                        <th>H.E. Diurna Ord (25%)</th>
+                        <th>H.E. Noc Ord (75%)</th>
+                        <th>H.E.D. Dominical (100%)</th>
+                        <th>H.E.N. Dominical (150%)</th>
+                        <th>Total Día</th>
+                    </tr>
+                </thead>
+                <tbody id="overtimeTableBody">
+                    <!-- Se llenará dinámicamente -->
+                </tbody>
+            </table>
+
+            <div class="overtime-summary">
+                <h3 style="margin-bottom: 15px; color: #e0e0e0;">Resumen</h3>
+                <div class="overtime-summary-item">
+                    <span>H.E. Diurna Ordinaria (25%):</span>
+                    <span id="summaryDiurnaOrd">$0</span>
+                </div>
+                <div class="overtime-summary-item">
+                    <span>H.E. Nocturna Ordinaria (75%):</span>
+                    <span id="summaryNocOrd">$0</span>
+                </div>
+                <div class="overtime-summary-item">
+                    <span>H.E. Diurna Dominical (100%):</span>
+                    <span id="summaryDiurnaDom">$0</span>
+                </div>
+                <div class="overtime-summary-item">
+                    <span>H.E. Nocturna Dominical (150%):</span>
+                    <span id="summaryNocDom">$0</span>
+                </div>
+                <div class="overtime-summary-item total">
+                    <span>Total Horas Extras:</span>
+                    <span id="summaryTotal">$0</span>
+                </div>
+            </div>
+            </div>
+
+            <div class="overtime-modal-footer">
+                <div class="modal-buttons">
+                    <button class="btn-secondary" onclick="closeOvertimeModal()">Cancelar</button>
+                    <button class="btn-primary" onclick="saveOvertime()">Guardar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+
+    <script>
+        let db;
+        let auth;
+        let currentUser = null;
+        let currentMonthId = null;
+        let userData = null;
+
+        // Initialize Firebase
+        function initFirebase() {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+            }
+            auth = firebase.auth();
+            db = firebase.firestore();
+
+            auth.onAuthStateChanged(user => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('authScreen').style.display = 'none';
+                    document.getElementById('loadingScreen').style.display = 'flex';
+                    document.getElementById('userEmail').textContent = user.email;
+                    loadUserData();
+                } else {
+                    document.getElementById('authScreen').style.display = 'flex';
+                    document.getElementById('loadingScreen').style.display = 'none';
+                    document.getElementById('appScreen').style.display = 'none';
+                }
+            });
+        }
+
+        // Login with Google
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(error => {
+                console.error('Error signing in:', error);
+                alert('Error al iniciar sesión: ' + error.message);
+            });
+        }
+
+        // Logout
+        function logout() {
+            auth.signOut().then(() => {
+                currentUser = null;
+                currentMonthId = null;
+                userData = null;
+            }).catch(error => {
+                console.error('Error signing out:', error);
+            });
+        }
+
+        // Load user data
+        async function loadUserData() {
+            try {
+                const docRef = db.collection('users').doc(currentUser.uid);
+                const doc = await docRef.get();
+
+                if (doc.exists) {
+                    userData = doc.data();
+                    if (!userData.months) {
+                        userData.months = {};
+                    }
+                } else {
+                    userData = { months: {} };
+                    await docRef.set(userData);
+                }
+
+                updateMonthSelector();
+                document.getElementById('loadingScreen').style.display = 'none';
+                document.getElementById('appScreen').style.display = 'block';
+            } catch (error) {
+                console.error('Error loading user data:', error);
+                alert('Error al cargar datos: ' + error.message);
+            }
+        }
+
+        // Create new month
+        async function createMonth() {
+            const name = prompt('Nombre del mes (ej: Enero 2025):');
+            if (!name) return;
+
+            const baseIncome = parseFloat(prompt('Ingreso base:', '3000000'));
+            if (isNaN(baseIncome)) return;
+
+            const monthId = Date.now().toString();
+            const newMonth = {
+                name: name,
+                baseIncome: baseIncome,
+                extraIncome: [],
+                expenses: [],
+                otherExpenses: [],
+                overtime: {
+                    days: {}
+                }
+            };
+
+            userData.months[monthId] = newMonth;
+
+            try {
+                await db.collection('users').doc(currentUser.uid).set(userData);
+                updateMonthSelector();
+                document.getElementById('monthSelector').value = monthId;
+                loadMonth(monthId);
+            } catch (error) {
+                console.error('Error creating month:', error);
+                alert('Error al crear mes: ' + error.message);
+            }
+        }
+
+        // Update month selector
+        function updateMonthSelector() {
+            const selector = document.getElementById('monthSelector');
+            selector.innerHTML = '<option value="">Seleccionar mes...</option>';
+            
+            if (userData && userData.months) {
+                Object.keys(userData.months).forEach(monthId => {
+                    const month = userData.months[monthId];
+                    const option = document.createElement('option');
+                    option.value = monthId;
+                    option.textContent = month.name;
+                    selector.appendChild(option);
+                });
+            }
+        }
+
+        // Load month
+        function loadMonth(monthId) {
+            if (!monthId) {
+                clearSummary();
+                document.getElementById('monthContent').innerHTML = '<p style="text-align: center; color: #909090; padding: 50px;">Selecciona un mes o crea uno nuevo</p>';
+                return;
+            }
+
+            currentMonthId = monthId;
+            const month = userData.months[monthId];
+
+            if (!month) {
+                alert('Mes no encontrado');
+                return;
+            }
+
+            renderExtraIncome(month);
+            renderExpenses(month);
+            renderOtherExpenses(month);
+            updateSummary(month);
+        }
+
+        // Format number with thousands separator
+        function formatNumber(value) {
+            if (!value) return '';
+            return value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // Parse formatted number
+        function parseFormattedNumber(value) {
+            if (!value) return 0;
+            return parseFloat(value.toString().replace(/\./g, '')) || 0;
+        }
+
+        // Format input on blur
+        function formatInputOnBlur(input) {
+            const value = parseFormattedNumber(input.value);
+            input.value = formatNumber(value);
+        }
+
+        // Render extra income
+        function renderExtraIncome(month) {
+            let html = `
+                <div class="extra-income-section">
+                    <h2>Ingresos Extra</h2>
+                    <button class="add-expense" onclick="addExtraIncome()">Agregar Ingreso Extra</button>
+                    <button class="add-expense" onclick="openOvertimeModal()">Gestionar Horas Extras</button>
+                    <div class="expense-grid">
+            `;
+
+            if (!month.extraIncome) month.extraIncome = [];
+
+            month.extraIncome.forEach((income, index) => {
+                html += `
+                    <div class="expense-item">
+                        <input type="text" value="${income.name}" onchange="updateExtraIncome(${index}, 'name', this.value)" placeholder="Descripción">
+                        <div class="expense-item-row">
+                            <input type="text" value="${formatNumber(income.amount)}" onfocus="this.value = this.value.replace(/\./g, '')" onblur="formatInputOnBlur(this)" onchange="updateExtraIncome(${index}, 'amount', parseFormattedNumber(this.value))" placeholder="0">
+                            <button onclick="removeExtraIncome(${index})">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('monthContent').innerHTML = html;
+        }
+
+        // Render expenses
+        function renderExpenses(month) {
+            let html = `
+                <div class="section">
+                    <h2>Gastos Fijos</h2>
+                    <button class="add-expense" onclick="addExpense()">Agregar Gasto Fijo</button>
+                    <div class="expense-grid">
+            `;
+
+            if (!month.expenses) month.expenses = [];
+
+            month.expenses.forEach((expense, index) => {
+                html += `
+                    <div class="expense-item">
+                        <input type="text" value="${expense.name}" onchange="updateExpense(${index}, 'name', this.value)" placeholder="Nombre del gasto">
+                        <div class="expense-item-row">
+                            <input type="text" value="${formatNumber(expense.amount)}" onfocus="this.value = this.value.replace(/\./g, '')" onblur="formatInputOnBlur(this)" onchange="updateExpense(${index}, 'amount', parseFormattedNumber(this.value))" placeholder="0">
+                            <button onclick="removeExpense(${index})">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('monthContent').innerHTML += html;
+        }
+
+        // Render other expenses
+        function renderOtherExpenses(month) {
+            let html = `
+                <div class="section">
+                    <h2>Otros Gastos</h2>
+                    <button class="add-expense" onclick="addOtherExpense()">Agregar Otro Gasto</button>
+                    <div class="expense-grid">
+            `;
+
+            if (!month.otherExpenses) month.otherExpenses = [];
+
+            month.otherExpenses.forEach((expense, index) => {
+                html += `
+                    <div class="expense-item">
+                        <input type="text" value="${expense.name}" onchange="updateOtherExpense(${index}, 'name', this.value)" placeholder="Nombre del gasto">
+                        <div class="expense-item-row">
+                            <input type="text" value="${formatNumber(expense.amount)}" onfocus="this.value = this.value.replace(/\./g, '')" onblur="formatInputOnBlur(this)" onchange="updateOtherExpense(${index}, 'amount', parseFormattedNumber(this.value))" placeholder="0">
+                            <button onclick="removeOtherExpense(${index})">Eliminar</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('monthContent').innerHTML += html;
+        }
+
+        // Update extra income
+        async function updateExtraIncome(index, field, value) {
+            const month = userData.months[currentMonthId];
+            if (field === 'amount') {
+                month.extraIncome[index][field] = parseFloat(value) || 0;
+            } else {
+                month.extraIncome[index][field] = value;
+            }
+            await saveData();
+            updateSummary(month);
+        }
+
+        // Add extra income
+        async function addExtraIncome() {
+            const month = userData.months[currentMonthId];
+            month.extraIncome.push({ name: 'Nuevo Ingreso', amount: 0 });
+            await saveData();
+            loadMonth(currentMonthId);
+        }
+
+        // Remove extra income
+        async function removeExtraIncome(index) {
+            const month = userData.months[currentMonthId];
+            month.extraIncome.splice(index, 1);
+            await saveData();
+            loadMonth(currentMonthId);
+        }
+
+        // Update expense
+        async function updateExpense(index, field, value) {
+            const month = userData.months[currentMonthId];
+            if (field === 'amount') {
+                month.expenses[index][field] = parseFloat(value) || 0;
+            } else {
+                month.expenses[index][field] = value;
+            }
+            await saveData();
+            updateSummary(month);
+        }
+
+        // Add expense
+        async function addExpense() {
+            const month = userData.months[currentMonthId];
+            month.expenses.push({ name: 'Nuevo Gasto', amount: 0 });
+            await saveData();
+            loadMonth(currentMonthId);
+        }
+
+        // Remove expense
+        async function removeExpense(index) {
+            const month = userData.months[currentMonthId];
+            month.expenses.splice(index, 1);
+            await saveData();
+            loadMonth(currentMonthId);
+        }
+
+        // Update other expense
+        async function updateOtherExpense(index, field, value) {
+            const month = userData.months[currentMonthId];
+            if (field === 'amount') {
+                month.otherExpenses[index][field] = parseFloat(value) || 0;
+            } else {
+                month.otherExpenses[index][field] = value;
+            }
+            await saveData();
+            updateSummary(month);
+        }
+
+        // Add other expense
+        async function addOtherExpense() {
+            const month = userData.months[currentMonthId];
+            month.otherExpenses.push({ name: 'Nuevo Gasto', amount: 0 });
+            await saveData();
+            loadMonth(currentMonthId);
+        }
+
+        // Remove other expense
+        async function removeOtherExpense(index) {
+            const month = userData.months[currentMonthId];
+            month.otherExpenses.splice(index, 1);
+            await saveData();
+            loadMonth(currentMonthId);
+        }
+
+        // Save data to Firebase
+        async function saveData() {
+            try {
+                await db.collection('users').doc(currentUser.uid).set(userData);
+            } catch (error) {
+                console.error('Error saving data:', error);
+                alert('Error al guardar datos: ' + error.message);
+            }
+        }
+
+        // Update summary
+        function updateSummary(month) {
+            const baseIncome = month.baseIncome || 0;
+            const baseIncomeAfterTax = baseIncome * 0.92;
+            
+            let extraIncomeTotal = 0;
+            if (month.extraIncome) {
+                extraIncomeTotal = month.extraIncome.reduce((sum, item) => sum + (item.amount || 0), 0);
+            }
+
+            const overtimeTotal = calculateOvertimeTotal(month);
+            extraIncomeTotal += overtimeTotal;
+
+            const totalIncome = baseIncomeAfterTax + extraIncomeTotal;
+
+            let totalExpenses = 0;
+            if (month.expenses) {
+                totalExpenses += month.expenses.reduce((sum, item) => sum + (item.amount || 0), 0);
+            }
+            if (month.otherExpenses) {
+                totalExpenses += month.otherExpenses.reduce((sum, item) => sum + (item.amount || 0), 0);
+            }
+
+            const balance = totalIncome - totalExpenses;
+
+            document.getElementById('baseIncome').textContent = formatCurrency(baseIncomeAfterTax);
+            document.getElementById('extraIncome').textContent = formatCurrency(extraIncomeTotal);
+            document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+            document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
+            document.getElementById('balance').textContent = formatCurrency(balance);
+
+            const balanceCard = document.getElementById('balanceCard');
+            balanceCard.classList.remove('positive', 'negative');
+            if (balance > 0) {
+                balanceCard.classList.add('positive');
+            } else if (balance < 0) {
+                balanceCard.classList.add('negative');
+            }
+        }
+
+        // Clear summary
+        function clearSummary() {
+            document.getElementById('baseIncome').textContent = '$0';
+            document.getElementById('extraIncome').textContent = '$0';
+            document.getElementById('totalIncome').textContent = '$0';
+            document.getElementById('totalExpenses').textContent = '$0';
+            document.getElementById('balance').textContent = '$0';
+            
+            const balanceCard = document.getElementById('balanceCard');
+            balanceCard.classList.remove('positive', 'negative');
+        }
+
+        // Format currency
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+        }
+
+        // Calculate overtime total
+        function calculateOvertimeTotal(month) {
+            if (!month.overtime || !month.overtime.days) return 0;
+
+            const baseHourValue = (month.baseIncome || 0) / 240;
+            let total = 0;
+
+            Object.values(month.overtime.days).forEach(day => {
+                total += (day.diurnaOrd || 0) * baseHourValue * 1.25;
+                total += (day.nocOrd || 0) * baseHourValue * 1.75;
+                total += (day.diurnaDom || 0) * baseHourValue * 2.00;
+                total += (day.nocDom || 0) * baseHourValue * 2.50;
+            });
+
+            return total;
+        }
+
+        // Open overtime modal
+        function openOvertimeModal() {
+            const month = userData.months[currentMonthId];
+            if (!month.overtime) {
+                month.overtime = { days: {} };
+            }
+
+            const baseHourValue = month.baseIncome / 240;
+            document.getElementById('baseHourValue').textContent = formatCurrency(baseHourValue);
+
+            let tableHTML = '';
+            for (let day = 1; day <= 31; day++) {
+                const dayData = month.overtime.days[day] || { diurnaOrd: 0, nocOrd: 0, diurnaDom: 0, nocDom: 0 };
+                
+                tableHTML += `
+                    <tr>
+                        <td>${day}</td>
+                        <td><input type="number" step="0.5" value="${dayData.diurnaOrd || 0}" onchange="updateOvertimeDay(${day}, 'diurnaOrd', this.value)"></td>
+                        <td><input type="number" step="0.5" value="${dayData.nocOrd || 0}" onchange="updateOvertimeDay(${day}, 'nocOrd', this.value)"></td>
+                        <td><input type="number" step="0.5" value="${dayData.diurnaDom || 0}" onchange="updateOvertimeDay(${day}, 'diurnaDom', this.value)"></td>
+                        <td><input type="number" step="0.5" value="${dayData.nocDom || 0}" onchange="updateOvertimeDay(${day}, 'nocDom', this.value)"></td>
+                        <td id="dayTotal${day}">$0</td>
+                    </tr>
+                `;
+            }
+
+            document.getElementById('overtimeTableBody').innerHTML = tableHTML;
+            calculateOvertimeSummary();
+            document.getElementById('overtimeModal').classList.add('active');
+        }
+
+        // Close overtime modal
+        function closeOvertimeModal() {
+            document.getElementById('overtimeModal').classList.remove('active');
+        }
+
+        // Update overtime day
+        function updateOvertimeDay(day, field, value) {
+            const month = userData.months[currentMonthId];
+            if (!month.overtime.days[day]) {
+                month.overtime.days[day] = { diurnaOrd: 0, nocOrd: 0, diurnaDom: 0, nocDom: 0 };
+            }
+            month.overtime.days[day][field] = parseFloat(value) || 0;
+            calculateOvertimeSummary();
+        }
+
+        // Calculate overtime summary
+        function calculateOvertimeSummary() {
+            const month = userData.months[currentMonthId];
+            const baseHourValue = month.baseIncome / 240;
+
+            let totalDiurnaOrd = 0;
+            let totalNocOrd = 0;
+            let totalDiurnaDom = 0;
+            let totalNocDom = 0;
+
+            for (let day = 1; day <= 31; day++) {
+                const dayData = month.overtime.days[day] || { diurnaOrd: 0, nocOrd: 0, diurnaDom: 0, nocDom: 0 };
+                
+                const diurnaOrd = (dayData.diurnaOrd || 0) * baseHourValue * 1.25;
+                const nocOrd = (dayData.nocOrd || 0) * baseHourValue * 1.75;
+                const diurnaDom = (dayData.diurnaDom || 0) * baseHourValue * 2.00;
+                const nocDom = (dayData.nocDom || 0) * baseHourValue * 2.50;
+
+                const dayTotal = diurnaOrd + nocOrd + diurnaDom + nocDom;
+                
+                const dayTotalElement = document.getElementById(`dayTotal${day}`);
+                if (dayTotalElement) {
+                    dayTotalElement.textContent = formatCurrency(dayTotal);
+                }
+
+                totalDiurnaOrd += diurnaOrd;
+                totalNocOrd += nocOrd;
+                totalDiurnaDom += diurnaDom;
+                totalNocDom += nocDom;
+            }
+
+            const total = totalDiurnaOrd + totalNocOrd + totalDiurnaDom + totalNocDom;
+
+            document.getElementById('summaryDiurnaOrd').textContent = formatCurrency(totalDiurnaOrd);
+            document.getElementById('summaryNocOrd').textContent = formatCurrency(totalNocOrd);
+            document.getElementById('summaryDiurnaDom').textContent = formatCurrency(totalDiurnaDom);
+            document.getElementById('summaryNocDom').textContent = formatCurrency(totalNocDom);
+            document.getElementById('summaryTotal').textContent = formatCurrency(total);
+        }
+
+        // Save overtime
+        async function saveOvertime() {
+            await saveData();
+            const month = userData.months[currentMonthId];
+            updateSummary(month);
+            closeOvertimeModal();
+        }
+
+        // Delete month
+        async function deleteMonth() {
+            if (!currentMonthId) {
+                alert('Selecciona un mes para eliminar');
+                return;
+            }
+
+            if (!confirm('¿Estás seguro de eliminar este mes?')) return;
+
+            delete userData.months[currentMonthId];
+            await saveData();
+            currentMonthId = null;
+            updateMonthSelector();
+            clearSummary();
+            document.getElementById('monthSelector').value = '';
+            document.getElementById('monthContent').innerHTML = '<p style="text-align: center; color: #909090; padding: 50px;">Selecciona un mes o crea uno nuevo</p>';
+        }
+
+        // Export to JSON
+        function exportToJSON() {
+            const dataStr = JSON.stringify(userData, null, 2);
+            const dataBlob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `gastos_${currentUser.email}_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Initialize app
+        initFirebase();
+    </script>
+</body>
+</html>
